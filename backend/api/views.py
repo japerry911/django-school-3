@@ -1,22 +1,15 @@
-import json
-
+from django.forms.models import model_to_dict
 from django.http import JsonResponse
+
+from products.models import Product
 
 
 def api_home(request, *args, **kwargs):
-    body = request.body
+    model_data = Product.objects.all().order_by("?").first()
 
     data = {}
-    try:
-        data = json.loads(body)
-    except:
-        pass
 
-    data["params"] = dict(request.GET)
-    data["headers"] = request.headers
+    if model_data:
+        data = model_to_dict(model_data, fields=["id", "title", "price"])
 
-    print(data)
-
-    return JsonResponse({
-        "message": "Hi There, Django API response..."
-    })
+    return JsonResponse(data)
